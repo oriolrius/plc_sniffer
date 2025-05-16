@@ -1,0 +1,17 @@
+[project]
+name = "plc-sniffer"
+version = "0.1.0"
+description = "A PLC network sniffer that captures and forwards UDP packets"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "scapy>=2.5.0",
+]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.uv]
+# UV-specific options can go here
