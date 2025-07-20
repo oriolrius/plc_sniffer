@@ -20,3 +20,18 @@ env/
 
 # Logs
 *.log
+
+# Tools - don't ignore bumpr
+tools/*
+!tools/bumpr
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

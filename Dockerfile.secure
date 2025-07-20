@@ -1,0 +1,65 @@
+# Multi-stage build for security and size optimization
+FROM python:3.11-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libpcap-dev \
+    linux-headers
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy and install dependencies
+WORKDIR /build
+COPY pyproject.toml setup.py ./
+RUN pip install --no-cache-dir -e .
+
+# Final stage
+FROM python:3.11-alpine
+
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    libpcap \
+    libstdc++ \
+    su-exec
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create non-root user
+RUN addgroup -g 1000 sniffer && \
+    adduser -u 1000 -G sniffer -s /bin/sh -D sniffer
+
+# Create app directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=sniffer:sniffer src/ ./src/
+COPY --chown=sniffer:sniffer scripts/docker-entrypoint.sh /usr/local/bin/
+
+# Make entrypoint executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Set environment defaults
+ENV INTERFACE=eth0 \
+    FILTER="udp" \
+    DESTINATION_IP=127.0.0.1 \
+    DESTINATION_PORT=8514 \
+    LOG_LEVEL=INFO \
+    MAX_PACKET_SIZE=65535 \
+    RATE_LIMIT=0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import socket; s=socket.socket(); s.settimeout(1); s.connect(('localhost', 8080)); s.close()"
+
+# Run as non-root user by default
+USER sniffer
+
+# Use custom entrypoint for capability handling
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["python", "-m", "plc_sniffer"]
