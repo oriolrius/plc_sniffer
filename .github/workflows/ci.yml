@@ -96,7 +96,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./Dockerfile.secure
+        file: ./Dockerfile
         push: false
         load: true
         tags: plc-sniffer:test
