@@ -4,6 +4,7 @@ FROM python:3.13-alpine AS builder
 # Install build dependencies
 RUN apk add --no-cache \
     gcc \
+    g++ \
     musl-dev \
     libpcap-dev \
     linux-headers
@@ -22,11 +23,13 @@ RUN pip install --upgrade pip setuptools wheel && \
 # Final stage
 FROM python:3.13-alpine
 
-# Install runtime dependencies only
+# Install runtime dependencies
 RUN apk add --no-cache \
     libpcap \
+    libpcap-dev \
     libstdc++ \
-    su-exec && \
+    su-exec \
+    tcpdump && \
     # Remove base Python's setuptools to avoid security vulnerabilities
     pip uninstall -y setuptools || true
 
@@ -62,6 +65,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Run as root when privileged mode is needed for packet capture
 # USER sniffer  # Commented out - run as root for packet capture
+
+# Force Scapy to use pcapy
+ENV SCAPY_USE_PCAPDNET=no
 
 # Use custom entrypoint for capability handling
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
