@@ -43,7 +43,7 @@ build-backend = "setuptools.build_meta"
 # UV-specific options can go here
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.13"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
