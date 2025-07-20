@@ -143,7 +143,7 @@ class HealthCheckServer:
     
     def _run(self) -> None:
         """Run the server in a thread."""
-        while self.running:
+        while self.running and self.server is not None:
             self.server.handle_request()
     
     def stop(self) -> None:
