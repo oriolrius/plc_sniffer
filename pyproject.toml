@@ -1,6 +1,6 @@
 [project]
 name = "plc-sniffer"
-version = "0.1.0"
+version = "0.2.0"
 description = "A PLC network sniffer that captures and forwards UDP packets"
 readme = "README.md"
 requires-python = ">=3.8"
