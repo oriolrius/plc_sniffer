@@ -10,7 +10,7 @@ services:
     network_mode: host
     environment:
       - LOG_LEVEL=INFO
-      - INTERFACE=br-lan
+      - INTERFACE=eth0
       - FILTER=udp port 40000
       - DESTINATION_IP=10.121.101.1
       - DESTINATION_PORT=40000

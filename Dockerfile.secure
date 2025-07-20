@@ -41,8 +41,9 @@ RUN addgroup -g 1000 sniffer && \
 # Create app directory
 WORKDIR /app
 
-# Copy application code
+# Copy application code and package metadata
 COPY --chown=sniffer:sniffer src/ ./src/
+COPY --chown=sniffer:sniffer setup.py pyproject.toml ./
 COPY --chown=sniffer:sniffer scripts/docker-entrypoint.sh /usr/local/bin/
 
 # Make entrypoint executable
@@ -60,6 +61,9 @@ ENV INTERFACE=eth0 \
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import socket; s=socket.socket(); s.settimeout(1); s.connect(('localhost', 8080)); s.close()"
+
+# Set PYTHONPATH to include the src directory
+ENV PYTHONPATH=/app/src:$PYTHONPATH
 
 # Run as non-root user by default
 USER sniffer
