@@ -1,43 +1,68 @@
-FROM python:alpine3.16
+# Multi-stage build for security and size optimization
+FROM python:3.13-alpine AS builder
 
-ARG UID=0
-ARG GID=0
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libpcap-dev \
+    linux-headers
 
-WORKDIR /sniffer
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Install all required dependencies including development tools and runtime libraries
-RUN apk update \
-    && apk add --no-cache \
-       libpcap \
-       tcpdump \
-       net-tools \
-       python3-dev \<
-       py3-pip \
-       build-base \
-       libpcap-dev \
-       linux-headers \
-       gcc \
-       musl-dev \
-    && rm -rf /var/cache/apk/*
-
-# Copy only the files necessary for dependency installation first
+# Copy and install dependencies
+WORKDIR /build
 COPY pyproject.toml ./
+COPY src ./src
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir .
 
-# Install Python dependencies directly with pip
-RUN pip install --no-cache-dir scapy>=2.5.0 
-RUN pip install --no-cache-dir -e .
+# Final stage
+FROM python:3.13-alpine
 
-# Copy the rest of the application code
-COPY . .
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    libpcap \
+    libstdc++ \
+    su-exec && \
+    # Remove base Python's setuptools to avoid security vulnerabilities
+    pip uninstall -y setuptools || true
 
-# CMD to run the application
-# Ensure plc_sniffer.py is the correct main script.
-CMD ["python3", "plc_sniffer.py"]
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Optional: Add and switch to a non-root user for better security
-# Consider uncommenting these lines for production
-# ARG APP_USER_UID=1000
-# ARG APP_USER_GID=1000
-# RUN addgroup -S -g ${APP_USER_GID} appgroup && \
-#     adduser -S -u ${APP_USER_UID} -G appgroup appuser
-# USER appuser
+# Create non-root user
+RUN addgroup -g 1000 sniffer && \
+    adduser -u 1000 -G sniffer -s /bin/sh -D sniffer
+
+# Create app directory
+WORKDIR /app
+
+# Copy entrypoint script
+COPY --chown=sniffer:sniffer scripts/docker-entrypoint.sh /usr/local/bin/
+
+# Make entrypoint executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Set environment defaults
+ENV INTERFACE=eth0 \
+    FILTER="udp" \
+    DESTINATION_IP=127.0.0.1 \
+    DESTINATION_PORT=8514 \
+    LOG_LEVEL=INFO \
+    MAX_PACKET_SIZE=65535 \
+    RATE_LIMIT=0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import socket; s=socket.socket(); s.settimeout(1); s.connect(('localhost', 8080)); s.close()"
+
+# Run as root when privileged mode is needed for packet capture
+# USER sniffer  # Commented out - run as root for packet capture
+
+# Use custom entrypoint for capability handling
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["python", "-m", "plc_sniffer"]
