@@ -25,7 +25,9 @@ FROM python:3.11-alpine3.20
 RUN apk add --no-cache \
     libpcap \
     libstdc++ \
-    su-exec
+    su-exec && \
+    # Remove base Python's setuptools to avoid security vulnerabilities
+    pip uninstall -y setuptools || true
 
 # Copy virtual environment from builder
 COPY --from=builder /opt/venv /opt/venv

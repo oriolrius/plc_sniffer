@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Deque, Any
 
-from scapy.all import sniff, IP, UDP, Raw  # type: ignore[import-untyped,attr-defined]
+from scapy.all import sniff, IP, UDP, Raw  # type: ignore[attr-defined]
 
 from .config import SnifferConfig
 
