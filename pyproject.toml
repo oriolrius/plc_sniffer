@@ -1,6 +1,6 @@
 [project]
 name = "plc-sniffer"
-version = "0.4.0"
+version = "0.4.1"
 description = "A PLC network sniffer that captures and forwards UDP packets"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -43,7 +43,7 @@ build-backend = "setuptools.build_meta"
 # UV-specific options can go here
 
 [tool.mypy]
-python_version = "0.4.0"
+python_version = "0.4.1"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
