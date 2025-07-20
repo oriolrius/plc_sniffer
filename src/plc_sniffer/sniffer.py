@@ -8,13 +8,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Deque, Any
 
-# Configure Scapy for Alpine Linux
-import os
-os.environ['PCAP_USE_TCPDUMP'] = '1'
-
-from scapy.config import conf
-conf.prog.tcpdump = '/usr/bin/tcpdump'
-
 from scapy.all import sniff, IP, UDP, Raw  # type: ignore[attr-defined]
 
 from .config import SnifferConfig

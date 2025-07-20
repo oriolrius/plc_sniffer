@@ -1,13 +1,12 @@
 # Multi-stage build for security and size optimization
-FROM python:3.13-alpine AS builder
+FROM python:3.13-slim AS builder
 
 # Install build dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
-    musl-dev \
     libpcap-dev \
-    linux-headers
+    && rm -rf /var/lib/apt/lists/*
 
 # Create virtual environment
 RUN python -m venv /opt/venv
@@ -21,25 +20,23 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir .
 
 # Final stage
-FROM python:3.13-alpine
+FROM python:3.13-slim
 
 # Install runtime dependencies
-RUN apk add --no-cache \
-    libpcap \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpcap0.8 \
     libpcap-dev \
-    libstdc++ \
-    su-exec \
-    tcpdump && \
-    # Remove base Python's setuptools to avoid security vulnerabilities
-    pip uninstall -y setuptools || true
+    tcpdump \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip uninstall -y setuptools || true
 
 # Copy virtual environment from builder
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Create non-root user
-RUN addgroup -g 1000 sniffer && \
-    adduser -u 1000 -G sniffer -s /bin/sh -D sniffer
+RUN groupadd -g 1000 sniffer && \
+    useradd -u 1000 -g sniffer -s /bin/bash -m sniffer
 
 # Create app directory
 WORKDIR /app
