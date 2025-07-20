@@ -107,9 +107,9 @@ def validate_bpf_filter(filter_str: str) -> str:
     
     # Check for common BPF keywords to ensure it's likely a valid filter
     bpf_keywords = ['udp', 'tcp', 'icmp', 'ip', 'host', 'port', 'net', 'src', 'dst', 'and', 'or', 'not']
-    filter_lower = filter_str.lower()
+    filter_words = filter_str.lower().split()
     
-    if not any(keyword in filter_lower for keyword in bpf_keywords):
+    if not any(keyword in filter_words for keyword in bpf_keywords):
         raise ValidationError(
             f"BPF filter '{filter_str}' doesn't contain any recognized keywords"
         )
