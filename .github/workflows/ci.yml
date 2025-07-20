@@ -98,6 +98,7 @@ jobs:
         context: .
         file: ./Dockerfile.secure
         push: false
+        load: true
         tags: plc-sniffer:test
         cache-from: type=gha
         cache-to: type=gha,mode=max

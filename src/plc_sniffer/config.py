@@ -2,7 +2,7 @@
 
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, Any
 
 from .validators import (
     validate_bpf_filter,
@@ -14,6 +14,8 @@ from .validators import (
     validate_rate_limit,
     ValidationError
 )
+
+__all__ = ['SnifferConfig', 'ConfigManager', 'ValidationError']
 
 
 @dataclass
@@ -29,7 +31,7 @@ class SnifferConfig:
     rate_limit: int = 0  # 0 means no limit
     socket_timeout: float = 5.0
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate configuration after initialization."""
         self.interface = validate_interface(self.interface)
         self.filter = validate_bpf_filter(self.filter)
@@ -72,7 +74,7 @@ class ConfigManager:
             raise ValidationError(f"Configuration error: {e}")
     
     @staticmethod
-    def from_dict(config_dict: dict) -> SnifferConfig:
+    def from_dict(config_dict: Dict[str, Any]) -> SnifferConfig:
         """Create configuration from dictionary.
         
         Args:

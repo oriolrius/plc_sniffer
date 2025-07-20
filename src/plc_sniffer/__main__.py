@@ -4,9 +4,11 @@ import sys
 import signal
 import logging
 import os
-from typing import Optional
+from typing import Optional, Any
+from types import FrameType
 
-from .config import ConfigManager, ValidationError
+from .config import ConfigManager
+from .validators import ValidationError
 from .sniffer import PlcSniffer
 from .health import HealthCheckServer
 
@@ -16,7 +18,7 @@ sniffer: Optional[PlcSniffer] = None
 health_server: Optional[HealthCheckServer] = None
 
 
-def signal_handler(signum, frame):
+def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
     """Handle shutdown signals gracefully."""
     logger.info(f"Received signal {signum}, shutting down...")
     if health_server:
@@ -26,7 +28,7 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     global sniffer, health_server
     

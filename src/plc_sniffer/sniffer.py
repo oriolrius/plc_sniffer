@@ -6,9 +6,9 @@ import time
 from collections import deque
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Deque
+from typing import Optional, Deque, Any
 
-from scapy.all import sniff, IP, UDP, Raw
+from scapy.all import sniff, IP, UDP, Raw  # type: ignore[import-untyped]
 
 from .config import SnifferConfig
 
@@ -69,7 +69,7 @@ class PacketStats:
         # Sliding window for rate calculation
         self.recent_packets: Deque[float] = deque(maxlen=window_size)
     
-    def record_packet(self, forwarded: bool, size: int = 0):
+    def record_packet(self, forwarded: bool, size: int = 0) -> None:
         """Record packet processing."""
         self.packets_processed += 1
         self.recent_packets.append(time.time())
@@ -100,7 +100,7 @@ class PacketStats:
         
         return 0.0
     
-    def log_stats(self):
+    def log_stats(self) -> None:
         """Log current statistics."""
         logger.info(
             f"Stats - Processed: {self.packets_processed}, "
@@ -136,7 +136,7 @@ class PlcSniffer:
         sock.settimeout(self.config.socket_timeout)
         return sock
     
-    def _process_packet(self, packet) -> None:
+    def _process_packet(self, packet: Any) -> None:
         """Process captured packet with security checks."""
         try:
             # Check rate limit

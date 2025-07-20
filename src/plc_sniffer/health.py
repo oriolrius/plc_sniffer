@@ -20,7 +20,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
     sniffer: Optional[PlcSniffer] = None
     start_time: float = time.time()
     
-    def do_GET(self):
+    def do_GET(self) -> None:
         """Handle GET requests."""
         if self.path == '/health':
             self._handle_health()
@@ -31,7 +31,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         else:
             self.send_error(404)
     
-    def _handle_health(self):
+    def _handle_health(self) -> None:
         """Liveness probe - is the service running?"""
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
@@ -45,7 +45,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         
         self.wfile.write(json.dumps(response).encode())
     
-    def _handle_ready(self):
+    def _handle_ready(self) -> None:
         """Readiness probe - is the service ready to accept traffic?"""
         if self.sniffer and self.sniffer.running:
             self.send_response(200)
@@ -61,7 +61,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         else:
             self.send_error(503, 'Service not ready')
     
-    def _handle_metrics(self):
+    def _handle_metrics(self) -> None:
         """Prometheus-style metrics endpoint."""
         if not self.sniffer:
             self.send_error(503, 'Service not initialized')
@@ -114,7 +114,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         
         self.wfile.write('\n'.join(metrics).encode())
     
-    def log_message(self, format, *args):
+    def log_message(self, format: str, *args: Any) -> None:
         """Suppress default HTTP logging."""
         pass  # Health checks are noisy, only log errors
 
@@ -128,7 +128,7 @@ class HealthCheckServer:
         self.thread: Optional[threading.Thread] = None
         self.running = False
     
-    def start(self, sniffer: PlcSniffer):
+    def start(self, sniffer: PlcSniffer) -> None:
         """Start the health check server."""
         HealthCheckHandler.sniffer = sniffer
         HealthCheckHandler.start_time = time.time()
@@ -141,12 +141,12 @@ class HealthCheckServer:
         
         logger.info(f"Health check server started on port {self.port}")
     
-    def _run(self):
+    def _run(self) -> None:
         """Run the server in a thread."""
         while self.running:
             self.server.handle_request()
     
-    def stop(self):
+    def stop(self) -> None:
         """Stop the health check server."""
         self.running = False
         if self.server:
