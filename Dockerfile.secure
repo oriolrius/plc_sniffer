@@ -60,8 +60,8 @@ ENV INTERFACE=eth0 \
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import socket; s=socket.socket(); s.settimeout(1); s.connect(('localhost', 8080)); s.close()"
 
-# Run as non-root user by default
-USER sniffer
+# Run as root when privileged mode is needed for packet capture
+# USER sniffer  # Commented out - run as root for packet capture
 
 # Use custom entrypoint for capability handling
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

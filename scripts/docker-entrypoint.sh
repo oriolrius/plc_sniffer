@@ -2,18 +2,14 @@
 set -e
 
 # This script handles running the sniffer with proper capabilities
-# when not running as root
 
-# Check if we're running as root
-if [ "$(id -u)" = "0" ]; then
-    echo "Running as root, switching to sniffer user with capabilities..."
-    
-    # Grant necessary capabilities to python binary
-    setcap cap_net_raw,cap_net_admin+eip /opt/venv/bin/python3
-    
-    # Switch to sniffer user
-    exec su-exec sniffer "$@"
+# When running with privileged: true, we can run as root directly
+# This avoids issues with capability handling
+if [ "$RUN_AS_ROOT" = "true" ] || [ "$(id -u)" = "0" ]; then
+    # Running as root - needed for packet capture
+    exec "$@"
 else
     # Already running as non-root
+    echo "Warning: Running as non-root user may cause permission issues with packet capture"
     exec "$@"
 fi
