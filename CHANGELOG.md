@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2025-07-21
+
+### Fixed
+- Correct Docker base image reference in README from Alpine to Debian Linux
+
+## [0.6.0] - 2025-07-21
+
+### Added
+- Comprehensive API documentation (`docs/api.md`)
+- Testing guide with htmlcov explanation (`docs/testing.md`)
+- Troubleshooting guide (`docs/troubleshooting.md`)
+- Automated changelog generation tools (Python script and git-cliff config)
+
+### Changed
+- Reorganized documentation structure for clarity:
+  - Renamed `SECURITY.md` to `vulnerability-reporting.md`
+  - Renamed `security.md` to `deployment-security.md`
+- Moved `CONTRIBUTING.md` to root directory
+
+### Removed
+- Unused `run_tests.py` file
+
+## [0.5.2] - 2025-07-21
+
+### Fixed
+- Update CI workflow to use renamed Dockerfile (was referencing Dockerfile.secure)
+
+## [0.5.1] - 2025-07-21
+
+### Fixed
+- Switch from Alpine to Debian base image to resolve libpcap compatibility issues
+
+### Changed
+- Consolidated to single Dockerfile (removed Dockerfile.secure)
+
+## [0.5.0] - 2025-07-21
+
+### Changed
+- Consolidated multiple Docker compose files into single flexible configuration
+- Simplified docker-entrypoint.sh to run as root with privileged mode
+- Added environment variable support with defaults in compose.yaml
+
+### Added
+- `.env.example` file for environment configuration
+
+## [0.4.2] - 2025-07-20
+
+### Fixed
+- Update release workflow to support both v-prefixed and plain semver tags
+
+## [0.4.1] - 2025-07-20
+
+### Fixed
+- Resolve module import error in Docker container by setting PYTHONPATH
+- Improve Dockerfile to use proper Python packaging instead of editable install
+
+## [0.4.0] - 2025-07-20
+
+### Added
+- Integrated bumpr v0.3.0 for version management
+
 ## [0.3.0] - 2025-07-20
 
 ### Added
