@@ -47,3 +47,9 @@ repos:
       - id: pylint
         args: [--disable=R,C,W0613,W0511]
         exclude: ^tests/
+  
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.12.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
