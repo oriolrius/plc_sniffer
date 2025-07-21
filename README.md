@@ -170,4 +170,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with [Scapy](https://scapy.net/) for packet manipulation
 - Version management by [bumpr](https://github.com/oriolrius/bumpr)
-- Containerization with Docker and Alpine Linux
+- Containerization with Docker and Debian Linux
