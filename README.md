@@ -123,6 +123,9 @@ curl http://localhost:8080/metrics
 # Install development dependencies
 make dev-install
 
+# Install git hooks
+./hooks/install.sh
+
 # Run tests
 make test
 

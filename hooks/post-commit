@@ -1,0 +1,29 @@
+#!/bin/bash
+# Git hook to update CHANGELOG.md after a release commit
+
+# Get the last commit message
+COMMIT_MSG=$(git log -1 --pretty=%B)
+
+# Check if this is a release commit from bumpr
+if [[ "$COMMIT_MSG" =~ ^releasing[[:space:]][0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    echo "Release commit detected, updating CHANGELOG.md..."
+    
+    # Extract version from commit message
+    VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+    
+    # Update changelog
+    python scripts/generate_changelog.py
+    
+    # Check if CHANGELOG.md was modified
+    if ! git diff --quiet CHANGELOG.md; then
+        echo "CHANGELOG.md was updated, creating amendment commit..."
+        git add CHANGELOG.md
+        git commit --amend --no-edit
+        echo "✅ CHANGELOG.md updated successfully for version $VERSION"
+    else
+        echo "ℹ️  CHANGELOG.md is already up to date"
+    fi
+else
+    # Not a release commit, do nothing
+    exit 0
+fi
