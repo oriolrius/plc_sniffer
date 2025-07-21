@@ -51,6 +51,8 @@ services:
       - LOG_LEVEL=INFO
 ```
 
+More details and options available in the [compose.yaml](compose.yaml) file.
+
 ### Local Installation
 
 ```bash
@@ -88,7 +90,7 @@ See [docs/configuration.md](docs/configuration.md) for detailed configuration op
 - **Non-Root Execution**: Runs with minimal privileges
 - **Resource Limits**: CPU and memory constraints
 
-See [docs/security.md](docs/security.md) for security considerations.
+See [docs/deployment-security.md](docs/deployment-security.md) for deployment security considerations.
 
 ## Monitoring
 
@@ -153,9 +155,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 ## Documentation
 
 - [Configuration Guide](docs/configuration.md)
-- [Security Considerations](docs/security.md)
+- [Deployment Security](docs/deployment-security.md)
+- [Vulnerability Reporting](docs/vulnerability-reporting.md)
 - [API Reference](docs/api.md)
+- [Testing Guide](docs/testing.md)
 - [Troubleshooting](docs/troubleshooting.md)
+- [Changelog Management](docs/changelog-guide.md)
 
 ## License
 
